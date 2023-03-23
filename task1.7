@@ -1,0 +1,158 @@
+/* eslint-disable  func-names */
+/* eslint-disable  no-console */
+
+const Alexa = require('ask-sdk-core');
+
+const GetNewFactHandler = {
+  canHandle(handlerInput) {
+    const request = handlerInput.requestEnvelope.request;
+    return request.type === 'LaunchRequest'
+      || (request.type === 'IntentRequest');
+  },
+  handle(handlerInput) {
+    const factArr = data;
+    const factIndex = Math.floor(Math.random() * factArr.length);
+    const randomFact = factArr[factIndex];
+    const speechOutput = GET_FACT_MESSAGE + randomFact;
+
+    return handlerInput.responseBuilder
+      .speak(speechOutput)
+      .withSimpleCard(SKILL_NAME, randomFact)
+      .getResponse();
+  },
+};
+
+const HelpHandler = {
+  canHandle(handlerInput) {
+    const request = handlerInput.requestEnvelope.request;
+    return request.type === 'IntentRequest'
+      && request.intent.name === 'AMAZON.HelpIntent';
+  },
+  handle(handlerInput) {
+    return handlerInput.responseBuilder
+      .speak(HELP_MESSAGE)
+      .reprompt(HELP_REPROMPT)
+      .getResponse();
+  },
+};
+
+const ExitHandler = {
+  canHandle(handlerInput) {
+    const request = handlerInput.requestEnvelope.request;
+    return request.type === 'IntentRequest'
+      && (request.intent.name === 'AMAZON.CancelIntent'
+        || request.intent.name === 'AMAZON.StopIntent');
+  },
+  handle(handlerInput) {
+    return handlerInput.responseBuilder
+      .speak(STOP_MESSAGE)
+      .getResponse();
+  },
+};
+
+const SessionEndedRequestHandler = {
+  canHandle(handlerInput) {
+    const request = handlerInput.requestEnvelope.request;
+    return request.type === 'SessionEndedRequest';
+  },
+  handle(handlerInput) {
+    console.log(`Session ended with reason: ${handlerInput.requestEnvelope.request.reason}`);
+
+    return handlerInput.responseBuilder.getResponse();
+  },
+};
+
+const ErrorHandler = {
+  canHandle() {
+    return true;
+  },
+  handle(handlerInput, error) {
+    console.log(`Error handled: ${error.message}`);
+
+    return handlerInput.responseBuilder
+      .speak('Sorry, an error occurred.')
+      .reprompt('Sorry, an error occurred.')
+      .getResponse();
+  },
+};
+
+const SKILL_NAME = 'Haiku Reader';
+const GET_FACT_MESSAGE = 'I have a haiku for you: ';
+const HELP_MESSAGE = 'You can say tell me a haiku...  or, you can say stop... What can I help you with?';
+const HELP_REPROMPT = 'You can ask me to tell a haiku or exit to stop. What can I help you with?';
+const STOP_MESSAGE = 'Goodbye!';
+
+const data = [
+  `Spring has sprung at last.
+  But where are the flowers now.
+  Snow's still on the ground`,
+
+  `Birds chirp in the trees.
+  Bees buzz by with their pollen.
+  Allergies ensue`,
+
+  `April showers bring May flowers.
+  or so they say.
+  But I just see mud.`,
+
+  `Shopping at the store.
+  I forgot my grocery list.
+  I'll just buy junk food`,
+
+  `Spring cleaning time's here.
+  I find socks I thought were lost.
+  And some moldy cheese`,
+
+    `Free samples galore.
+  My belly is now so full.
+  I can't buy a thing.`,
+
+  `Squeaky cart wheels screech.
+  I try to walk a straight line.
+  But my cart has a mind`,
+
+  `Alarm goes off, snooze.
+  Ten more minutes, I just need.
+  Wakes up at noon, oops`,
+
+  `Stayed up way too late.
+  Now my bed's my new best friend.
+  Morning can wait, right?`,
+
+  `Sun is up outside.
+  I'm wrapped up in my cocoon.
+  Sleeping in, oh yeah`,
+
+  `Late night Netflix binge.
+  Turns into a sleep-in day.
+  I'll start tomorrow`,
+
+  `The trees sway and dance.
+  Nature's peaceful symphony.
+  Until a bug bites.`,
+
+  `Hiking in the woods.
+  Enjoying the great outdoors.
+  Where did my phone go?`,
+
+  `Birds chirp in the trees.
+  Nature's soundtrack of the day.
+  Until the car honks.`,
+
+  `Flowers bloom with grace.
+  Colors vibrant and alive.
+  My allergies, ugh`
+
+];
+
+const skillBuilder = Alexa.SkillBuilders.custom();
+
+exports.handler = skillBuilder
+  .addRequestHandlers(
+    GetNewFactHandler,
+    HelpHandler,
+    ExitHandler,
+    SessionEndedRequestHandler
+  )
+  .addErrorHandlers(ErrorHandler)
+  .lambda();
